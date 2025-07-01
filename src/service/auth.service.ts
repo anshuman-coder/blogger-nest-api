@@ -2,10 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import * as argon from 'argon2';
 import { LoginBodyDto, RegisterBodyDto } from 'src/dto';
+import { JwtService } from '@nestjs/jwt';
+import { User } from 'generated/prisma';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
+    private readonly config: ConfigService,
+  ) {}
   async login({ email, password }: LoginBodyDto) {
     const user = await this.prisma.user.findUnique({
       where: { email },
@@ -38,11 +45,16 @@ export class AuthService {
       },
     });
 
+    if (!_user) {
+      throw new HttpException(
+        "User doesn't exists, please register first!",
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    const token = await this.signToken(_user);
     return {
-      data: {
-        ..._user,
-        phone: _user?.phone?.toString(),
-      },
+      data: token,
     };
   }
 
@@ -73,5 +85,19 @@ export class AuthService {
     return {
       data: { ...newUser, phone: newUser.phone?.toString() },
     };
+  }
+
+  async signToken(payload: Omit<User, 'password'>): Promise<string> {
+    const { phone, ...otherFields } = payload;
+    const data = {
+      sub: otherFields.id,
+      phone: phone?.toString(),
+      ...otherFields,
+    };
+
+    return this.jwt.signAsync(data, {
+      expiresIn: '15m',
+      secret: this.config.getOrThrow('AUTH_SECRET'),
+    });
   }
 }
