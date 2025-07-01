@@ -17,7 +17,7 @@ export class AuthService {
         "User doesn't exists, please register first!",
         HttpStatus.NOT_FOUND,
       );
-    const verify = await argon.verify(user?.password as string, password);
+    const verify = await argon.verify(user?.password, password);
 
     if (!verify)
       throw new HttpException(
