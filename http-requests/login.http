@@ -1,0 +1,33 @@
+# required variables and endpoints
+@baseUrl = http://localhost:4000/api/v1
+@existingUserEmail ="anshuman.singh@gmail.com"
+
+
+# login request - fails with unknown user.
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "anshuman.singh@yahoo.com",
+  "password": "Abc@123"
+}
+
+###
+# login request - fails with wrong password
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": {{existingUserEmail}},
+  "password": "Abc@1234"
+}
+
+###
+# login request - success scenario returns with a jwt token
+POST  {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": {{existingUserEmail}},
+  "password": "Abc@123"
+}
