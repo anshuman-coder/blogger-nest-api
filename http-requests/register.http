@@ -1,0 +1,42 @@
+@baseUrl = http://localhost:4000/api/v1
+@existingUserEmail ="anshuman.singh@gmail.com"
+@newUserEmail = "nikhil.singh@yahoo.com"
+
+
+# register request - User already exists
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fname": "Anshuman",
+  "lname": "Singh",
+  "phone": 9338679803,
+  "email": {{existingUserEmail}},
+  "password": "Anshu@123"
+}
+
+###
+# register request - User email is invalid
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fname": "Kevin",
+  "lname": "Singh",
+  "phone": 9338679803,
+  "email": "abc233",
+  "password": "Anshu@123"
+}
+
+###
+# register request - Success scenario with token in return
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "fname": "Rahul",
+  "lname": "Singh",
+  "phone": 2299887766,
+  "email": "rahulsingh@gmail.com",
+  "password": "Anshu@123"
+}
