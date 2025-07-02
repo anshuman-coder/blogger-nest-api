@@ -79,11 +79,15 @@ export class AuthService {
         fname: true,
         lname: true,
         phone: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 
+    const token = await this.signToken(newUser);
+
     return {
-      data: { ...newUser, phone: newUser.phone?.toString() },
+      data: token,
     };
   }
 
