@@ -6,6 +6,7 @@
 # register request - User already exists
 POST {{baseUrl}}/auth/register
 Content-Type: application/json
+# X-Auth-Token: "ABCD"
 
 {
   "fname": "Anshuman",
